@@ -15,7 +15,7 @@ def resolve_path(x):
 
 rule target:
     input:
-        'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
+        'output/030_scrmshaw/hits'
 
 rule scrmshaw:
     input:
@@ -26,7 +26,7 @@ rule scrmshaw:
                        'data2generateGBEresults/'
                        'data/CRM.train/trainSet')
     output:
-        'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
+        'output/030_scrmshaw/hits'
     params:
         outdir = 'output/030_scrmshaw'
     log:
