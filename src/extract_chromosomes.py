@@ -15,6 +15,6 @@ target_chr = ['Group1.4', 'Group3.5']
 ########
 
 scaffolds = [x for x in SeqIO.parse(fa, 'fasta')]
-#kept_scaffolds = [x for x in scaffolds if x.id in target_chr]
-kept_scaffolds = scaffolds
+kept_scaffolds = [x for x in scaffolds if x.id in target_chr]
+#kept_scaffolds = scaffolds
 SeqIO.write(kept_scaffolds, output_fa, 'fasta')
