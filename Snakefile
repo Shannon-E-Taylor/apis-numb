@@ -28,7 +28,10 @@ rule scrmshaw:
     output:
         'output/030_scrmshaw/hits'
     params:
-        outdir = 'output/030_scrmshaw'
+        outdir = 'output/030_scrmshaw',
+        universeMap = ('data/data2generateGBEresults/'
+                       'data2generateGBEresults/data/universalGeneSet')
+
     log:
         'output/logs/030_scrmshaw.log'
     shell:
@@ -38,7 +41,8 @@ rule scrmshaw:
         '--exon {input.exons} '
         '--gene {input.genes} '
         '--outdir {params.outdir} '
-        '--traindirlst {input.traindirlst}'
+        '--traindirlst {input.traindirlst} '
+        '--universeMap {params.universeMap} '
         '&> {log}'
 
 rule rename_output:

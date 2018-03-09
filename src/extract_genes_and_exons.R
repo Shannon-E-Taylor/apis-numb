@@ -23,8 +23,8 @@ gff3 <- import.gff3(gff_file)
 
 # subset the groups
 keep <- grep("^Group3\\.", levels(seqnames(gff3)), value = TRUE)
-gff_subset <- gff3[seqnames(gff3) %in% c("Group1.4", keep)]
-#gff_subset <- gff3
+#gff_subset <- gff3[seqnames(gff3) %in% c("Group1.4", keep)]
+gff_subset <- gff3
 
 # make a table of genes and exons
 genes <- gff_subset[gff_subset$type == "gene"]

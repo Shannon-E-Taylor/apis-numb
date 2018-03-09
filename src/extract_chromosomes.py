@@ -17,6 +17,6 @@ output_fa = snakemake.output['fa']
 scaffolds = [x for x in SeqIO.parse(fa, 'fasta')]
 target_chr = [x.id for x in scaffolds if x.id.startswith('Group3.') 
               or x.id == 'Group1.4']
-kept_scaffolds = [x for x in scaffolds if x.id in target_chr]
-#kept_scaffolds = scaffolds
+#kept_scaffolds = [x for x in scaffolds if x.id in target_chr]
+kept_scaffolds = scaffolds
 SeqIO.write(kept_scaffolds, output_fa, 'fasta')
