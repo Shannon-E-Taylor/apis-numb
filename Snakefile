@@ -22,17 +22,18 @@ rule scrmshaw:
         fa = 'output/020_remove_repeats/masked_chromosomes.fa',
         genes = 'output/010_ref/genes.txt',
         exons = 'output/010_ref/exons.txt',
-        traindirlst = 'data/dros/mapping0.ap/crms.fasta',
+        traindirlst = ('data/data2generateGBEresults/'
+					   'data/CRM.train/trainSet'),
         gff = 'data/amel_OGSv3.2.gff3'
     output:
         'output/030_scrmshaw/hits/hexmcd/'
     params:
-        outdir = 'output/030_scrmshaw/'
+        outdir = 'output/030_scrmshaw'
     log:
         'output/logs/030_scrmshaw.log'
     shell:
         'SCRMshaw/code/scrm.pl '
-        '--thitg 300 thitm 2000 --imm --hexmcd --pac '
+        '--thitg 300 --imm --hexmcd --pac '
         '--genome {input.fa} '
         '--exon {input.exons} '
         '--gene {input.genes} '
