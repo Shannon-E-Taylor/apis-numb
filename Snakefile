@@ -22,9 +22,7 @@ rule scrmshaw:
         fa = 'output/020_remove_repeats/masked_chromosomes.fa',
         genes = 'output/010_ref/genes.txt',
         exons = 'output/010_ref/exons.txt',
-        traindirlst = ('data/data2generateGBEresults/'
-                       'data2generateGBEresults/'
-                       'data/CRM.train/trainSet')
+        traindirlst = 'data/dros/trainsetdir', #using the dros training data from http://veda.cs.uiuc.edu/SCRMshaw/ 
     output:
         'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
     params:
