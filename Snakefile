@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+
+###IMPORTANT- Change line 105 of SCRMshaw/code/top_scores.ReAsgnNrbGene.pl to :
+#my $chr = (split /\.fasta/,$name)[0];
+
 import pathlib
 
 #############
@@ -22,9 +26,8 @@ rule scrmshaw:
         fa = 'output/020_remove_repeats/masked_chromosomes.fa',
         genes = 'output/010_ref/genes.txt',
         exons = 'output/010_ref/exons.txt',
-        traindirlst = ('data/data2generateGBEresults/'
-                       'data2generateGBEresults/'
-                       'data/CRM.train/trainSet')
+        traindirlst = 'data/dros/trainSet' 
+        #file containing the paths (from apis-numb) to the training sets 
     output:
         'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
     params:
@@ -38,7 +41,7 @@ rule scrmshaw:
         '--exon {input.exons} '
         '--gene {input.genes} '
         '--outdir {params.outdir} '
-        '--traindirlst {input.traindirlst}'
+        '--traindirlst {input.traindirlst} '
         '&> {log}'
 
 rule rename_output:
@@ -63,7 +66,7 @@ rule remove_repeats:
         #exit 0 because trf409.linux64 returns error 2
         shell(
               'cd {params.wd} || exit 1 ; '
-              'trf409.linux64 '
+              '../../trf409.linux64 '
               '{my_fasta} '
               '2 7 7 80 10 50 500 -m -h || exit 0 '
             )
