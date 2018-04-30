@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-
-###IMPORTANT- Change line 105 of SCRMshaw/code/top_scores.ReAsgnNrbGene.pl to :
-#my $chr = (split /\.fasta/,$name)[0];
-
 import pathlib
 
 #############
@@ -19,7 +15,34 @@ def resolve_path(x):
 
 rule target:
     input:
-        'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
+        'output/040_process/results.out.bed' 
+
+rule process:
+	input: 
+		'data/ncbi-genomes-2018-04-30/GCF_000002195.4_Amel_4.5_genomic.fna.nsd',
+		scrm = 'output/030_scrmshaw/hits/hexmcd',
+		db = 'data/ncbi-genomes-2018-04-30/GCF_000002195.4_Amel_4.5_genomic.fna'
+	output: 
+		hits = 'output/040_process/all_hits.txt', 
+		top = 'output/040_process/top_hits.txt',
+		csv = 'output/040_process/results.out.csv',
+		bed = 'output/040_process/results.out.bed'
+
+	log: 
+		'output/logs/040_process'
+	run: 
+		shell(
+			#grab all the hit files and put them into one file 
+			'cat {input.scrm}/*/*.hits.ranked > {output.hits} ; '
+			#filter top hits only 
+			'grep -A 1 "lr=[123]," {output.hits} --no-group-separator '
+			'| tr -d "[[:blank:]]" > {output.top} ; '
+			#blast search 
+			'blastn -db {input.db} -query {output.top} -out {output.csv} -outfmt "10 sacc sstart send" ; '
+			#make it a .bed file for IGV 
+			'<{output.csv} tr "," "\t" > {output.bed} '
+		)
+
 
 rule scrmshaw:
     input:
@@ -29,7 +52,7 @@ rule scrmshaw:
         traindirlst = 'data/dros/trainSet' 
         #file containing the paths (from apis-numb) to the training sets 
     output:
-        'output/030_scrmshaw/hits/hexmcd/mapping0.ap.hits'
+        'output/030_scrmshaw/hits/hexmcd/mapping0.ap'
     params:
         outdir = 'output/030_scrmshaw'
     log:
@@ -44,14 +67,17 @@ rule scrmshaw:
         '--traindirlst {input.traindirlst} '
         '&> {log}'
 
-rule rename_output:
-    input: 
-        fa = 'output/020_remove_repeats/chromosomes.fa.2.7.7.80.10.50.500.mask'
-    output: 
-        fa = 'output/020_remove_repeats/masked_chromosomes.fa'
-    shell: 
-        'cp {input.fa} {output.fa}'
-
+rule rename_output: #rename Group1.4 to Group1p4 to get around SCRMshaw bug
+   input:
+       fa = 'output/020_remove_repeats/chromosomes.fa.2.7.7.80.10.50.500.mask',
+       genes = 'output/010_ref/genes.txt',
+       exons = 'output/010_ref/exons.txt'
+   output:
+       fa = 'output/020_remove_repeats/masked_chromosomes.fa'
+   shell: #change dots to p to make SCRMshaw happy
+       "sed -e 's/\./p/g'  {input.fa} > {output.fa}; " 
+       "sed -i -e 's/\./p/g' {input.genes}; "
+       "sed -i -e 's/\./p/g' {input.exons}; "
 
 rule remove_repeats:
     input:
@@ -97,4 +123,10 @@ rule extract_genes_and_exons:
         'src/extract_genes_and_exons.R'
 
 
-
+rule make_blast_db: #this should probably be done upstream but idk how. Also, outputs to /data folder. 
+	input: #from ncbi- if the output is being fed into IGV the genomes need to be the same
+		db = 'data/ncbi-genomes-2018-04-30/GCF_000002195.4_Amel_4.5_genomic.fna' 
+	output: 
+		db = 'data/ncbi-genomes-2018-04-30/GCF_000002195.4_Amel_4.5_genomic.fna.nsd'
+	shell:
+		'makeblastdb -in {input.db} -parse_seqids -dbtype nucl '
